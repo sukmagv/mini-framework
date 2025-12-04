@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use Core\Database;
+use Core\Response;
 use App\Models\Product;
 use App\Requests\ProductRequest;
 
@@ -22,10 +23,15 @@ class ProductController
     {
         $allProducts = $this->products->findAll();
 
-        return json_encode([
-            'message' => 'all products retrieved',
-            'data' => $allProducts
-        ]);
+        if (isset($allProducts['error'])) {
+            return Response::failed($allProducts['message'], 500);
+        }
+
+        if (empty($allProducts)) {
+            return Response::failed('Data not found', 404);
+        }
+
+        return Response::success('All data retrieved', $allProducts, 200);
     }
 
     public function store()
@@ -35,10 +41,7 @@ class ProductController
         $result = ProductRequest::validated($data);
 
         if (isset($result['errors'])) {
-            return json_encode([
-                'message' => 'Validation error',
-                'errors' => $result['errors']
-            ]);
+            return Response::failed($result['errors'], 422);
         }
         
         $response = $this->products->create([
@@ -46,20 +49,26 @@ class ProductController
             "category" => $data["category"]
         ]);
 
-        return json_encode([
-            'message' => 'all products stored',
-            'data' => $response
-        ]);
+        if (isset($response['error'])) {
+            return Response::failed($response['message'], 500);
+        }
+
+        return Response::success('Data created successfully', $response, 201);
     }
 
     public function show($id)
     {
         $oneProduct = $this->products->findOne($id);
 
-        return json_encode([
-            'message' => 'selected products retrieved',
-            'data' => $oneProduct
-        ]);
+        if (isset($oneProduct['error'])) {
+            return Response::failed($oneProduct['message'], 500);
+        }
+
+        if (empty($oneProduct)) {
+            return Response::failed('Data not found', 404);
+        }
+
+        return Response::success('Selected data retrieved', $oneProduct, 200);
     }
 
     public function update($id)
@@ -69,10 +78,7 @@ class ProductController
         $result = ProductRequest::validated($data);
 
         if (isset($result['errors'])) {
-            return json_encode([
-                'message' => 'Validation error',
-                'errors' => $result['errors']
-            ]);
+            return Response::failed($result['errors'], 422);
         }
 
         $response = $this->products->update(
@@ -83,18 +89,26 @@ class ProductController
             ]
         );
 
-        return json_encode([
-            'message' => 'selected products updated',
-            'data' => $response
-        ]);
+        if (isset($response['error'])) {
+            return Response::failed($response['message'], 500);
+        }
+
+        return Response::success('Data updated successfully', $response, 200);
     }
 
     public function delete($id)
     {
         $response = $this->products->delete($id);
 
-        return json_encode([
-            'message' => 'success',
-        ]); 
+        if (isset($response['error'])) {
+            return Response::failed($response['message'], 500);
+        }
+
+        if (isset($response['not_found'])) {
+            return Response::failed('Data not found', 404);
+        }
+
+        return Response::success('Selected data deleted', $response, 200);
+
     }
 }
