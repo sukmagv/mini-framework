@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Product;
+use App\Requests\ProductRequest;
 
 class ProductController
 {
@@ -19,6 +20,15 @@ class ProductController
     public function store()
     {
         $data = $_POST;
+
+        $result = ProductRequest::validated($data);
+
+        if (isset($result['errors'])) {
+            return json_encode([
+                'message' => 'Validation error',
+                'errors' => $result['errors']
+            ]);
+        }
 
         $products = new Product();
         $response = $products->create($data);
@@ -42,6 +52,15 @@ class ProductController
     public function update($id)
     {
         $data = json_decode(file_get_contents('php://input'), true);
+
+        $result = ProductRequest::validated($data);
+
+        if (isset($result['errors'])) {
+            return json_encode([
+                'message' => 'Validation error',
+                'errors' => $result['errors']
+            ]);
+        }
 
         $products = new Product();
         $response = $products->update($id, $data);
