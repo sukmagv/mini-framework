@@ -2,18 +2,29 @@
 
 namespace App\Controllers;
 
+use Core\Database;
 use App\Models\Product;
 use App\Requests\ProductRequest;
 
 class ProductController
 {
+    protected $db;
+    protected $products;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->connection();
+
+        $this->products = new Product($this->db);
+    }
+
     public function index()
     {
-        $products = (new Product)->findAll();
+        $allProducts = $this->products->findAll();
 
         return json_encode([
             'message' => 'all products retrieved',
-            'data' => $products
+            'data' => $allProducts
         ]);
     }
 
@@ -29,9 +40,8 @@ class ProductController
                 'errors' => $result['errors']
             ]);
         }
-
-        $products = new Product();
-        $response = $products->create($data);
+        
+        $response = $this->products->create($data);
 
         return json_encode([
             'message' => 'all products stored',
@@ -41,11 +51,11 @@ class ProductController
 
     public function show($id)
     {
-        $products = (new Product)->findOne($id);
+        $oneProduct = $this->products->findOne($id);
 
         return json_encode([
             'message' => 'selected products retrieved',
-            'data' => $products
+            'data' => $oneProduct
         ]);
     }
 
@@ -62,8 +72,7 @@ class ProductController
             ]);
         }
 
-        $products = new Product();
-        $response = $products->update($id, $data);
+        $response = $this->products->update($id, $data);
 
         return json_encode([
             'message' => 'selected products updated',
@@ -73,11 +82,10 @@ class ProductController
 
     public function delete($id)
     {
-        $product = new Product();
-        $product->delete($id);
+        $response = $this->products->delete($id);
 
         return json_encode([
-            'message' => 'success'
+            'message' => 'success',
         ]); 
     }
 }

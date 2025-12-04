@@ -3,10 +3,7 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Core\Router;
-use Core\Database;
 use App\Controllers\ProductController;
-
-$db = new Database();
 
 $router = new Router();
 
