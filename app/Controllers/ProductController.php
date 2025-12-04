@@ -5,7 +5,7 @@ namespace App\Controllers;
 use Core\Database;
 use Core\Response;
 use App\Models\Product;
-use App\Requests\ProductRequest;
+use Core\Request;
 
 class ProductController
 {
@@ -38,7 +38,10 @@ class ProductController
     {
         $data = $_POST;
 
-        $result = ProductRequest::validated($data);
+        $result = Request::validated($data, [
+            'name' => 'required',
+            'category' => 'required'
+        ]);
 
         if (isset($result['errors'])) {
             return Response::failed($result['errors'], 422);
@@ -75,7 +78,20 @@ class ProductController
     {
         $data = json_decode(file_get_contents('php://input'), true);
 
-        $result = ProductRequest::validated($data);
+        if (empty($id) || !is_numeric($id)) {
+            return Response::failed('Invalid ID', 400);
+        }
+
+        $existing = $this->products->findOne($id);
+        
+        if (!$existing) {
+            return Response::failed('Data not found', 404);
+        }
+
+        $result = Request::validated($data, [
+            'name' => 'required',
+            'category' => 'required'
+        ]);
 
         if (isset($result['errors'])) {
             return Response::failed($result['errors'], 422);
