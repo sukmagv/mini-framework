@@ -41,7 +41,10 @@ class ProductController
             ]);
         }
         
-        $response = $this->products->create($data);
+        $response = $this->products->create([
+            "name" => $data["name"],
+            "category" => $data["category"]
+        ]);
 
         return json_encode([
             'message' => 'all products stored',
@@ -72,7 +75,13 @@ class ProductController
             ]);
         }
 
-        $response = $this->products->update($id, $data);
+        $response = $this->products->update(
+            $id, 
+            [
+                "name" => $data["name"],
+                "category" => $data["category"]
+            ]
+        );
 
         return json_encode([
             'message' => 'selected products updated',
