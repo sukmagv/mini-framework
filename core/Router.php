@@ -2,11 +2,24 @@
 
 namespace Core;
 
+/**
+ * Base router class for registering and executing HTTP routes
+ */
 class Router
 {
-    private $routes = [];
+    private array $routes = [];
 
-    public function add(string $method, string $path, $callback)
+    /**
+     * Add a new route to the router
+     * 
+     * The callback is executed when the route is matched
+     *
+     * @param string $method
+     * @param string $path
+     * @param callable|array $callback
+     * @return void
+     */
+    public function add(string $method, string $path, callable|array $callback): void
     {
         $this->routes[] = [
             'method'   => $method,
@@ -15,7 +28,12 @@ class Router
         ];
     }
 
-    public function run()
+    /**
+     * Run the router and execute the matching route callback
+     *
+     * @return mixed
+     */
+    public function run(): mixed
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri    = $_SERVER['REQUEST_URI'];

@@ -17,6 +17,6 @@ $router->add('POST', '/product', [ProductController::class, 'store']);
 $router->add('PUT', '/product/:id', [ProductController::class, 'update']);
 $router->add('DELETE', '/product/:id', [ProductController::class, 'delete']);
 
-echo $router->run();
+echo json_encode($router->run());
 
 ?>

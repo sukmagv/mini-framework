@@ -2,9 +2,20 @@
 
 namespace Core;
 
+/**
+ * Base request class for handling and retrieving HTTP request data
+ */
+
 class Request
 {
-    public static function validated(array $data, array $rules)
+    /**
+     * Validate input data function
+     *
+     * @param array $data
+     * @param array $rules
+     * @return array
+     */
+    public static function validated(array $data, array $rules): array
     {
         $errors = [];
 
