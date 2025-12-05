@@ -36,30 +36,34 @@ class Router
     public function run(): mixed
     {
         $method = $_SERVER['REQUEST_METHOD'];
-        $uri    = $_SERVER['REQUEST_URI'];
+        $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        $allowedMethods = [];
 
         foreach ($this->routes as $route) {
-            if ($route['method'] != $method) {
-                continue;
-            }
+            $regexPattern = preg_replace_callback('/:\w+/', fn($m) => '([^/]+)', $route['path']);
 
-            $regexPattern = preg_replace_callback('/:\w+/', function ($params) {
-                return '([^/]+)';
-                },
-                $route['path']
-            );
-    
             if (preg_match("#^{$regexPattern}$#", $uri, $params)) {
                 array_shift($params);
 
-                if (is_callable($route['callback'])) {
-                    return call_user_func_array($route['callback'], $params);
+                if ($route['method'] === $method) {
+                    if (is_callable($route['callback'])) {
+                        return call_user_func_array($route['callback'], $params);
+                    } else {
+                        list($controller, $methodName) = $route['callback'];
+                        $instance = new $controller();
+                        return $instance->$methodName(...$params);
+                    }
                 } else {
-                    list($controller, $method) = $route['callback'];
-                    $instance = new $controller();
-                    return $instance->$method(...$params);
+                    $allowedMethods[] = $route['method'];
                 }
             }
+        }
+
+        if (!empty($allowedMethods)) {
+            header('HTTP/1.1 405 Method Not Allowed');
+            header('Allow: ' . implode(', ', $allowedMethods));
+            die('405 Method Not Allowed');
         }
 
         header('HTTP/1.1 404 Not Found');
