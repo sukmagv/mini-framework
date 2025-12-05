@@ -51,7 +51,7 @@ class ProductController
      */
     public function store(): array
     {
-        $data = $_POST;
+        $data = Request::all();
 
         $result = Request::validated($data, [
             'name' => 'required',
@@ -103,7 +103,7 @@ class ProductController
      */
     public function update(int $id): array
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = Request::all();
 
         if (empty($id) || !is_numeric($id)) {
             return Response::failed('Invalid ID', 400);
