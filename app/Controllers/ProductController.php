@@ -9,9 +9,14 @@ use Core\Request;
 
 class ProductController
 {
-    protected $db;
-    protected $products;
+    protected \mysqli $db;
+    protected Product $products;
 
+    /**
+     * Initialize the controller by setting up database connection
+     * 
+     * Instantiating the Product model
+     */
     public function __construct()
     {
         $this->db = Database::getInstance()->connection();
@@ -19,7 +24,12 @@ class ProductController
         $this->products = new Product($this->db);
     }
 
-    public function index()
+    /**
+     * Retrieve all products from the database.
+     *
+     * @return array
+     */
+    public function index(): array
     {
         $allProducts = $this->products->findAll();
 
@@ -34,7 +44,12 @@ class ProductController
         return Response::success('All data retrieved', $allProducts, 200);
     }
 
-    public function store()
+    /**
+     * Store a new product in the database
+     *
+     * @return array
+     */
+    public function store(): array
     {
         $data = $_POST;
 
@@ -59,7 +74,13 @@ class ProductController
         return Response::success('Data created successfully', $response, 201);
     }
 
-    public function show($id)
+    /**
+     * Get specific product data by ID
+     *
+     * @param integer $id
+     * @return array
+     */
+    public function show(int $id): array
     {
         $oneProduct = $this->products->findOne($id);
 
@@ -74,7 +95,13 @@ class ProductController
         return Response::success('Selected data retrieved', $oneProduct, 200);
     }
 
-    public function update($id)
+    /**
+     * Update a product data by ID
+     *
+     * @param integer $id
+     * @return array
+     */
+    public function update(int $id): array
     {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -112,7 +139,13 @@ class ProductController
         return Response::success('Data updated successfully', $response, 200);
     }
 
-    public function delete($id)
+    /**
+     * Delete product data by ID
+     *
+     * @param integer $id
+     * @return array
+     */
+    public function delete(int $id): array
     {
         $response = $this->products->delete($id);
 
