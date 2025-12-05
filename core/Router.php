@@ -8,6 +8,7 @@ namespace Core;
 class Router
 {
     private array $routes = [];
+    private array $globalMiddleware = [];
 
     /**
      * Add a new route to the router
@@ -24,8 +25,18 @@ class Router
         $this->routes[] = [
             'method'   => $method,
             'path'     => $path,
-            'callback' => $callback
+            'callback' => $callback,
+            'middleware' => $this->globalMiddleware
         ];
+    }
+
+    /**
+     * Add global middleware (applied to all routes)
+     */
+    public function middleware(callable $func): self
+    {
+        $this->globalMiddleware[] = $func;
+        return $this;
     }
 
     /**
@@ -47,6 +58,14 @@ class Router
                 array_shift($params);
 
                 if ($route['method'] === $method) {
+                    foreach ($route['middleware'] as $mw) {
+                        $result = $mw();
+                        if ($result !== null) {
+                            echo json_encode($result);
+                            return null;
+                        }
+                    }
+
                     if (is_callable($route['callback'])) {
                         return call_user_func_array($route['callback'], $params);
                     } else {
@@ -63,10 +82,10 @@ class Router
         if (!empty($allowedMethods)) {
             header('HTTP/1.1 405 Method Not Allowed');
             header('Allow: ' . implode(', ', $allowedMethods));
-            die('405 Method Not Allowed');
+            die(json_encode(['status' => 'failed', 'message' => 'Method Not Allowed']));
         }
 
         header('HTTP/1.1 404 Not Found');
-        die('404 Not Found');
+        die(json_encode(['status' => 'failed', 'message' => 'Not Found']));
     }
 }
