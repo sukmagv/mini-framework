@@ -51,7 +51,7 @@ class ProductController
      */
     public function store(): array
     {
-        $data = $_POST;
+        $data = Request::all();
 
         $result = Request::validated($data, [
             'name' => 'required',
