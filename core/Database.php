@@ -4,15 +4,25 @@ namespace Core;
 
 use Dotenv\Dotenv;
 
+/**
+ * Base database class for managing MySQLi connections and singleton access
+ */
+
 class Database 
 {
-    private $hostname;
-    private $username;
-    private $password;
-    private $database;
-    private $connection;
-    private static $instance = null;
+    private string $hostname;
+    private string $username;
+    private string $password;
+    private string $database;
+    private \mysqli $connection;
+    private static ?Database $instance = null;
 
+    /**
+     * Initialize the database connection.
+     *
+     * Load DB credentials from .env and establish MySQLi connection.
+     * Dies if credentials are missing or connection fails.
+     */
     public function __construct() 
     {
         $dotenv = Dotenv::createImmutable(__DIR__.'/../');
@@ -44,11 +54,21 @@ class Database
         $this->connection = $connect;
     }
 
-    public function connection() 
+    /**
+     * Get the active MySQLi connection
+     *
+     * @return \mysqli
+     */
+    public function connection(): \mysqli
     {
         return $this->connection;
     }
 
+    /**
+     * Get the singleton instance of the Database class.
+     *
+     * @return Database
+     */
     public static function getInstance(): Database
     {
         if (self::$instance === null) {

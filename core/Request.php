@@ -2,9 +2,40 @@
 
 namespace Core;
 
+/**
+ * Base request class for handling and retrieving HTTP request data
+ */
+
 class Request
 {
-    public static function validated(array $data, array $rules)
+    /**
+     * Get all input from JSON request
+     *
+     * @return array
+     */
+    public static function all(): array
+    {
+        $data = $_POST;
+
+        if (empty($data)) {
+            $json = file_get_contents('php://input');
+            
+            if ($json) {
+                $data = json_decode($json, true) ?? [];
+            }
+        }
+
+        return $data;
+    }
+    
+    /**
+     * Validate input data function
+     *
+     * @param array $data
+     * @param array $rules
+     * @return array
+     */
+    public static function validated(array $data, array $rules): array
     {
         $errors = [];
 

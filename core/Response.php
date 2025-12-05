@@ -2,25 +2,46 @@
 
 namespace Core;
 
+/**
+ * Base response class for generating consistent API success and failure responses.
+ */
+
 class Response
 {
-    public static function success($message, $data, $code)
+    /**
+     * Success response format function
+     *
+     * @param string|array $message
+     * @param array $data
+     * @param integer $code
+     * @return array
+     */
+    public static function success(string|array $message, array $data = [], int $code = 200): array
     {
         http_response_code($code);
-        return json_encode([
+        
+        return [
             'status' => 'success',
             'message' => $message,
             'data' => (! empty($data) ? $data : [])
-        ]);
+        ];
     }
 
-    public static function failed($message, $code)
+    /**
+     * Failed response format function
+     *
+     * @param string|array $message
+     * @param integer $code
+     * @return array
+     */
+    public static function failed(string|array $message, int $code = 400): array
     {
         http_response_code($code);
-        return json_encode([
+
+        return [
             'status' => 'failed',
             'message' => $message
-        ]);
+        ];
     }
 }
 
