@@ -2,6 +2,10 @@
 
 namespace Core;
 
+/**
+ * Base request class for handling and retrieving HTTP request data
+ */
+
 class Request
 {
     /**
