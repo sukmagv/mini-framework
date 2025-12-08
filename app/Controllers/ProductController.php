@@ -68,7 +68,7 @@ class ProductController
         }
 
         if (empty($oneProduct)) {
-            return Response::failed('Data not found', 404);
+            return Response::failed('Data ID not found', 404);
         }
 
         return Response::success('Selected data retrieved', $oneProduct, 200);
@@ -83,7 +83,7 @@ class ProductController
         $existing = $this->products->findOne($id);
         
         if (!$existing) {
-            return Response::failed('Data not found', 404);
+            return Response::failed('Data ID not found', 404);
         }
         
         $data = Request::all();
@@ -121,7 +121,7 @@ class ProductController
         }
 
         if (isset($response['not_found'])) {
-            return Response::failed('Data not found', 404);
+            return Response::failed('Data ID not found', 404);
         }
 
         return Response::success('Selected data deleted', $response, 200);

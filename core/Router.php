@@ -45,6 +45,6 @@ class Router
         }
 
         header('HTTP/1.1 404 Not Found');
-        die('404 Not Found');
+        die(json_encode(['status' => 'failed', 'message' => 'Route Not Found']));
     }
 }
