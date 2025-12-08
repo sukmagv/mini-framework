@@ -23,7 +23,7 @@ class Response
         return [
             'status' => 'success',
             'message' => $message,
-            'data' => (! empty($data) ? $data : [])
+            'data' => $data
         ];
     }
 
