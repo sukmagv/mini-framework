@@ -40,18 +40,18 @@ class Database
             }
         }
 
-        $connect = new \mysqli(
-            $this->hostname,
-            $this->username,
-            $this->password,
-            $this->database
-        );
+        mysqli_report(MYSQLI_REPORT_STRICT);
 
-        if ($connect->connect_error) {
-            die("Koneksi gagal:  {$connect->connect_error}");
+        try {
+            $this->connection = new \mysqli(
+                $this->hostname,
+                $this->username,
+                $this->password,
+                $this->database
+            );
+        } catch (\mysqli_sql_exception $e) {
+            die("Database connection failed: " . $e->getMessage());
         }
-
-        $this->connection = $connect;
     }
 
     /**
