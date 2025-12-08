@@ -103,8 +103,6 @@ class ProductController
      */
     public function update(int $id): array
     {
-        $data = Request::all();
-
         if (empty($id) || !is_numeric($id)) {
             return Response::failed('Invalid ID', 400);
         }
@@ -114,7 +112,9 @@ class ProductController
         if (!$existing) {
             return Response::failed('Data not found', 404);
         }
-
+        
+        $data = Request::all();
+        
         $result = Request::validated($data, [
             'name' => 'required',
             'category' => 'required'
