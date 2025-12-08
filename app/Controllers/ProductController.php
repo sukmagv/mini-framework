@@ -9,14 +9,9 @@ use Core\Request;
 
 class ProductController
 {
-    protected \mysqli $db;
-    protected Product $products;
+    protected $db;
+    protected $products;
 
-    /**
-     * Initialize the controller by setting up database connection
-     * 
-     * Instantiating the Product model
-     */
     public function __construct()
     {
         $this->db = Database::getInstance()->connection();
@@ -24,12 +19,7 @@ class ProductController
         $this->products = new Product($this->db);
     }
 
-    /**
-     * Retrieve all products from the database.
-     *
-     * @return array
-     */
-    public function index(): array
+    public function index()
     {
         $allProducts = $this->products->findAll();
 
@@ -44,14 +34,9 @@ class ProductController
         return Response::success('All data retrieved', $allProducts, 200);
     }
 
-    /**
-     * Store a new product in the database
-     *
-     * @return array
-     */
-    public function store(): array
+    public function store()
     {
-        $data = Request::all();
+        $data = $_POST;
 
         $result = Request::validated($data, [
             'name' => 'required',
@@ -74,13 +59,7 @@ class ProductController
         return Response::success('Data created successfully', $response, 201);
     }
 
-    /**
-     * Get specific product data by ID
-     *
-     * @param integer $id
-     * @return array
-     */
-    public function show(int $id): array
+    public function show($id)
     {
         $oneProduct = $this->products->findOne($id);
 
@@ -89,20 +68,16 @@ class ProductController
         }
 
         if (empty($oneProduct)) {
-            return Response::failed('Data ID not found', 404);
+            return Response::failed('Data not found', 404);
         }
 
         return Response::success('Selected data retrieved', $oneProduct, 200);
     }
 
-    /**
-     * Update a product data by ID
-     *
-     * @param integer $id
-     * @return array
-     */
-    public function update(int $id): array
+    public function update($id)
     {
+        $data = json_decode(file_get_contents('php://input'), true);
+
         if (empty($id) || !is_numeric($id)) {
             return Response::failed('Invalid ID', 400);
         }
@@ -110,11 +85,9 @@ class ProductController
         $existing = $this->products->findOne($id);
         
         if (!$existing) {
-            return Response::failed('Data ID not found', 404);
+            return Response::failed('Data not found', 404);
         }
-        
-        $data = Request::all();
-        
+
         $result = Request::validated($data, [
             'name' => 'required',
             'category' => 'required'
@@ -139,13 +112,7 @@ class ProductController
         return Response::success('Data updated successfully', $response, 200);
     }
 
-    /**
-     * Delete product data by ID
-     *
-     * @param integer $id
-     * @return array
-     */
-    public function delete(int $id): array
+    public function delete($id)
     {
         $response = $this->products->delete($id);
 
@@ -154,7 +121,7 @@ class ProductController
         }
 
         if (isset($response['not_found'])) {
-            return Response::failed('Data ID not found', 404);
+            return Response::failed('Data not found', 404);
         }
 
         return Response::success('Selected data deleted', $response, 200);

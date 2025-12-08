@@ -6,5 +6,10 @@ use Core\Model;
 
 class Product extends Model 
 {
-    protected string $table = 'products';
+    protected $table = 'products';
+
+    public function __construct($connection)
+    {
+        return parent::__construct($connection);
+    }
 }

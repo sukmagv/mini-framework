@@ -2,25 +2,17 @@
 
 namespace Core;
 
-/**
- * Base model class for database operations.
- */
 class Model
 {
-    protected \mysqli $conn;
-    protected string $table;
+    protected $conn;
+    protected $table;
 
-    public function __construct(\mysqli $connection)
+    public function __construct($connection)
     {
         $this->conn = $connection;
     }
 
-    /**
-     * Retrieve all records from the table
-     *
-     * @return array
-     */
-    public function findAll(): array
+    public function findAll() 
     {
         try {
             $sql = "SELECT * FROM {$this->table}";
@@ -45,13 +37,8 @@ class Model
             ];
         }
     }
-    /**
-     * Retrieve a single record by its ID
-     *
-     * @param integer $id
-     * @return array
-     */
-    public function findOne(int $id): array
+
+    public function findOne($id) 
     {
         try {
             $sql = "SELECT * FROM {$this->table} WHERE id = ?";
@@ -61,9 +48,7 @@ class Model
             if ($stmt->execute()) {
                 $result = $stmt->get_result();
 
-                $row = $result->fetch_assoc();
-
-                return $row ?? [];
+                return $result->fetch_assoc();
             }
 
             return [];
@@ -75,13 +60,8 @@ class Model
             ];
         }
     }
-    /**
-     * Insert a new record into the table
-     *
-     * @param array $data
-     * @return array
-     */
-    public function create(array $data): array
+
+    public function create($data) 
     {
         try {
             $fields = implode(", ", array_keys($data));
@@ -107,14 +87,8 @@ class Model
             ];
         }
     }
-    /**
-     * Update an existing record by ID
-     *
-     * @param integer $id
-     * @param array $data
-     * @return array
-     */
-    public function update(int $id, array $data): array
+
+    public function update($id, $data) 
     {
         try {
             $fields = implode(" = ?, ", array_keys($data)) . " = ?";
@@ -142,13 +116,7 @@ class Model
         }
     }
 
-    /**
-     * Delete a record by ID
-     *
-     * @param integer $id
-     * @return array
-     */
-    public function delete(int $id): array
+    public function delete($id) 
     {
         try {
             $check = $this->findOne($id);
