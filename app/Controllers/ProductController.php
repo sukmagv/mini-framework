@@ -76,8 +76,6 @@ class ProductController
 
     public function update($id)
     {
-        $data = json_decode(file_get_contents('php://input'), true);
-
         if (empty($id) || !is_numeric($id)) {
             return Response::failed('Invalid ID', 400);
         }
@@ -87,7 +85,9 @@ class ProductController
         if (!$existing) {
             return Response::failed('Data not found', 404);
         }
-
+        
+        $data = Request::all();
+        
         $result = Request::validated($data, [
             'name' => 'required',
             'category' => 'required'
