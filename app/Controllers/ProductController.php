@@ -3,11 +3,12 @@
 namespace App\Controllers;
 
 use Core\Database;
+use Core\Request;
 use Core\Response;
 use App\Models\Product;
-use Core\Request;
+use App\Controllers\Controller;
 
-class ProductController
+class ProductController extends Controller
 {
     protected \mysqli $db;
     protected Product $products;

@@ -59,33 +59,65 @@ class Router
 
                 if ($route['method'] === $method) {
                     foreach ($route['middleware'] as $mw) {
-                        $result = $mw();
-                        if ($result !== null) {
-                            echo json_encode($result);
+                        $mwResult = $mw();
+
+                        if ($mwResult !== null) {
+                            $GLOBALS['logger']->app("INFO", "Request blocked by middleware", [
+                                'route' => $route['path'],
+                                'response' => $mwResult
+                            ]);
+
+                            echo json_encode($mwResult);
                             return null;
                         }
                     }
 
                     if (is_callable($route['callback'])) {
-                        return call_user_func_array($route['callback'], $params);
+
+                        $GLOBALS['logger']->app("INFO", "Route matched function callback", [
+                            'route' => $route['path']
+                        ]);
+
+                        $response = call_user_func_array($route['callback'], $params);
+
                     } else {
                         list($controller, $methodName) = $route['callback'];
                         $instance = new $controller();
-                        return $instance->$methodName(...$params);
+
+                        $GLOBALS['logger']->app("INFO", "Route matched controller", [
+                            'controller' => $controller,
+                            'method'     => $methodName
+                        ]);
+
+                        $response = $instance->$methodName(...$params);
                     }
-                } else {
-                    $allowedMethods[] = $route['method'];
+
+                    $GLOBALS['logger']->app("INFO","Response returned", [
+                        'method' => $method,
+                        'url'    => $uri,
+                        'response' => $response
+                    ]);
+
+                    echo json_encode($response);
+                    
+                    return $response;
                 }
+
+                $allowedMethods[] = $route['method'];
             }
         }
 
         if (!empty($allowedMethods)) {
-            header('HTTP/1.1 405 Method Not Allowed');
-            header('Allow: ' . implode(', ', $allowedMethods));
-            die(json_encode(['status' => 'failed', 'message' => 'Method Not Allowed']));
+            die(json_encode(Response::failed(
+                'Method Not Allowed', 
+                405
+            ) + ['allowed_methods' => $allowedMethods]));
         }
 
-        header('HTTP/1.1 404 Not Found');
-        die(json_encode(['status' => 'failed', 'message' => 'Route Not Found']));
+        die(json_encode(Response::failed(
+            'Route Not Found', 
+            404
+        )));
+
     }
 }

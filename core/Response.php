@@ -20,11 +20,15 @@ class Response
     {
         http_response_code($code);
         
-        return [
+        $response = [
             'status' => 'success',
             'message' => $message,
             'data' => $data
         ];
+
+        $GLOBALS['logger']->app("INFO","Response success", $response + ['code' => $code]);
+
+        return $response;
     }
 
     /**
@@ -38,10 +42,14 @@ class Response
     {
         http_response_code($code);
 
-        return [
+        $response = [
             'status' => 'failed',
             'message' => $message
         ];
+
+        $GLOBALS['logger']->app("ERROR","Response failed", $response + ['code' => $code]);
+
+        return $response;
     }
 }
 
