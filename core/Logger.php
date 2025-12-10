@@ -39,11 +39,30 @@ class Logger
         file_put_contents($this->logDir . '/' . $this->file, $logEntry, FILE_APPEND);
     }
 
-    public function debug(string $message, array $context = [])   { $this->log('DEBUG', $message, $context); }
-    public function info(string $message, array $context = [])    { $this->log('INFO', $message, $context); }
-    public function warning(string $message, array $context = []) { $this->log('WARNING', $message, $context); }
-    public function error(string $message, array $context = [])   { $this->log('ERROR', $message, $context); }
-    public function fatal(string $message, array $context = [])   { $this->log('FATAL', $message, $context); }
+    public function debug(string $message, array $context = [])
+    { 
+        $this->log('DEBUG', $message, $context); 
+    }
+
+    public function info(string $message, array $context = [])    
+    { 
+        $this->log('INFO', $message, $context); 
+    }
+
+    public function warning(string $message, array $context = []) 
+    { 
+        $this->log('WARNING', $message, $context); 
+    }
+    
+    public function error(string $message, array $context = [])   
+    { 
+        $this->log('ERROR', $message, $context); 
+    }
+
+    public function fatal(string $message, array $context = [])   
+    { 
+        $this->log('FATAL', $message, $context); 
+    }
 }
 
 $GLOBALS['logger'] = new Logger();
@@ -70,5 +89,13 @@ register_shutdown_function(function() {
             'line' => $error['line'],
             'type' => $error['type']
         ]);
+    }
+});
+
+spl_autoload_register(function ($class) {
+    $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
+    if (file_exists($file)) {
+        require $file;
+        $GLOBALS['logger']->info("Autoloaded file", ['file' => $file]);
     }
 });
