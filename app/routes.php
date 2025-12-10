@@ -1,21 +1,26 @@
 <?php
 
-use App\Controllers\ProductController;
 use Core\Router;
+use Core\Response;
+use App\Controllers\ProductController;
+use Core\HttpStatus;
 
-$checkRequestFormat = function() {
+$checkRequestFormat = function () {
+    $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-    
-    if (stripos($contentType, 'application/json') === false &&
-        stripos($contentType, 'application/x-www-form-urlencoded') === false &&
-        stripos($contentType, 'multipart/form-data') === false) 
-        {
-        http_response_code(400);
-        return [
-            'status' => 'failed',
-            'message' => 'Invalid request format. Use JSON or form-data.'
-        ];
+
+    if (in_array($method, ['GET', 'DELETE'])) {
+        return null;
     }
+
+    if (
+        stripos($contentType, 'application/json') === false &&
+        stripos($contentType, 'application/x-www-form-urlencoded') === false &&
+        stripos($contentType, 'multipart/form-data') === false
+    ) {
+        return Response::failed("Unsupported Content-Type", HttpStatus::BAD_REQUEST);
+    }
+
     return null;
 };
 

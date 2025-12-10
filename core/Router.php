@@ -58,49 +58,74 @@ class Router
                 array_shift($params);
 
                 if ($route['method'] === $method) {
-                    foreach ($route['middleware'] as $mw) {
-                        $mwResult = $mw();
+                     if (str_contains($route['path'], ':id')) {
+                        $id = $params[0] ?? null;  
 
-                        if ($mwResult !== null) {
-                            $GLOBALS['logger']->app("INFO", "Request blocked by middleware", [
-                                'route' => $route['path'],
-                                'response' => $mwResult
-                            ]);
+                        if (!$id) {
+                            return Response::failed("ID is required", HttpStatus::BAD_REQUEST);
+                        }
 
-                            echo json_encode($mwResult);
-                            return null;
+                        if (!is_numeric($id)) {
+                            return Response::failed("ID must be a number", HttpStatus::BAD_REQUEST);
                         }
                     }
 
-                    if (is_callable($route['callback'])) {
+                    try {
+                        foreach ($route['middleware'] as $mw) {
+                            $result = $mw();
+                            if ($result !== null) {
+                                return $result;
+                            }
+                        }
 
-                        $GLOBALS['logger']->app("INFO", "Route matched function callback", [
-                            'route' => $route['path']
+                        if (is_callable($route['callback'])) {
+
+                            $GLOBALS['logger']->app("INFO", "Route matched function callback", [
+                                'route' => $route['path']
+                            ]);
+
+                            $response = call_user_func_array($route['callback'], $params);
+
+                        } else {
+                            list($controller, $methodName) = $route['callback'];
+                            $instance = new $controller();
+
+                            $GLOBALS['logger']->app("INFO", "Route matched controller", [
+                                'controller' => $controller,
+                                'method'     => $methodName
+                            ]);
+
+                            $reflection = new \ReflectionMethod($instance, $methodName);
+                            $args = [];
+
+                            foreach ($reflection->getParameters() as $param) {
+                                $type = $param->getType()?->getName();
+
+                                if ($type === Request::class) {
+                                    $args[] = new Request();
+                                } elseif (!empty($params)) {
+                                    $args[] = array_shift($params);
+                                } else {
+                                    $args[] = null;
+                                }
+                            }
+
+                            $response = $instance->$methodName(...$args);
+                        }
+
+                        $GLOBALS['logger']->app("INFO","Response returned", [
+                            'method' => $method,
+                            'url'    => $uri,
+                            'response' => $response
                         ]);
+                        
+                        return $response;
 
-                        $response = call_user_func_array($route['callback'], $params);
-
-                    } else {
-                        list($controller, $methodName) = $route['callback'];
-                        $instance = new $controller();
-
-                        $GLOBALS['logger']->app("INFO", "Route matched controller", [
-                            'controller' => $controller,
-                            'method'     => $methodName
-                        ]);
-
-                        $response = $instance->$methodName(...$params);
+                    } catch (\InvalidArgumentException $e) {
+                        return Response::failed($e->getMessage(), HttpStatus::BAD_REQUEST);
+                    } catch (\Throwable $e) {
+                        return Response::failed($e->getMessage(), HttpStatus::INTERNAL_SERVER_ERROR);
                     }
-
-                    $GLOBALS['logger']->app("INFO","Response returned", [
-                        'method' => $method,
-                        'url'    => $uri,
-                        'response' => $response
-                    ]);
-
-                    echo json_encode($response);
-                    
-                    return $response;
                 }
 
                 $allowedMethods[] = $route['method'];
@@ -108,16 +133,9 @@ class Router
         }
 
         if (!empty($allowedMethods)) {
-            die(json_encode(Response::failed(
-                'Method Not Allowed', 
-                405
-            ) + ['allowed_methods' => $allowedMethods]));
+            return Response::failed('Method Not Allowed', HttpStatus::METHOD_NOT_ALLOWED) + ['allowed_methods' => $allowedMethods];
         }
 
-        die(json_encode(Response::failed(
-            'Route Not Found', 
-            404
-        )));
-
+        return Response::failed('Route Not Found', HttpStatus::NOT_FOUND);
     }
 }
