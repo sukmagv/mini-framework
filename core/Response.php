@@ -38,8 +38,6 @@ class Response
             'data' => $data
         ];
 
-        $GLOBALS['logger']->app("INFO","Response success", $response + ['code' => $code->value]);
-
         return $response;
     }
 
@@ -58,8 +56,6 @@ class Response
             'status' => 'failed',
             'message' => $message
         ];
-
-        $GLOBALS['logger']->app("ERROR","Response failed", $response + ['code' => $code->value]);
 
         return $response;
     }

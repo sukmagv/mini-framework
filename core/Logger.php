@@ -1,61 +1,74 @@
 <?php
 namespace Core;
 
+use Throwable;
+
 class Logger
 {
     private string $logDir;
     private string $file;
 
     /**
-     * Initialize the Logger class by specifying the directory and log file
+     * Constructor
+     * All log report will be saved in app.log
      *
-     * @param [type] $logDir
-     * @param string $file
+     * @param string
+     * @param string
      */
     public function __construct(string $logDir = __DIR__ . '/../logs', string $file = 'app.log')
     {
         $this->logDir = rtrim($logDir, '/');
         $this->file   = $file;
 
-        if (!is_dir($this->logDir)) {
-            mkdir($this->logDir, 0777, true);
-        }
-
-        if (!file_exists("$this->logDir/{$this->file}")) {
-            touch("$this->logDir/{$this->file}");
-        }
+        if (!is_dir($this->logDir)) mkdir($this->logDir, 0777, true);
     }
 
     /**
-     * Write a log entry to the log file
+     * Write log report to app.log
      *
-     * @param string $status
-     * @param string $message
-     * @param array $context
-     * @return void
+     * @param string
+     * @param string
+     * @param array
      */
-    private function write(string $status, string $message, array $context = []): void
+    public function log(string $level, string $message, array $context = []): void
     {
         $time = date('Y-m-d H:i:s');
+        $contextStr = !empty($context) ? json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '';
+        $logEntry = sprintf("[%s] [%s] %s %s\n", $time, strtoupper($level), $message, $contextStr);
 
-        $line = "[$time][$status] $message";
-        if (!empty($context)) {
-            $line .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        }
-
-        file_put_contents("$this->logDir/{$this->file}", $line . PHP_EOL, FILE_APPEND);
+        file_put_contents($this->logDir . '/' . $this->file, $logEntry, FILE_APPEND);
     }
 
-    /**
-     * Log a message with a given status
-     *
-     * @param string $status
-     * @param string $message
-     * @param array $context
-     * @return void
-     */
-    public function app(string $status, string $message, array $context = []): void
-    {
-        $this->write($status, $message, $context);
-    }
+    public function debug(string $message, array $context = [])   { $this->log('DEBUG', $message, $context); }
+    public function info(string $message, array $context = [])    { $this->log('INFO', $message, $context); }
+    public function warning(string $message, array $context = []) { $this->log('WARNING', $message, $context); }
+    public function error(string $message, array $context = [])   { $this->log('ERROR', $message, $context); }
+    public function fatal(string $message, array $context = [])   { $this->log('FATAL', $message, $context); }
 }
+
+$GLOBALS['logger'] = new Logger();
+
+set_error_handler(function($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) return;
+    $GLOBALS['logger']->error($message, compact('file','line','severity'));
+    return false;
+});
+
+set_exception_handler(function(Throwable $exception) {
+    $GLOBALS['logger']->fatal($exception->getMessage(), [
+        'file' => $exception->getFile(),
+        'line' => $exception->getLine(),
+        'trace' => $exception->getTraceAsString()
+    ]);
+});
+
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        $GLOBALS['logger']->fatal($error['message'], [
+            'file' => $error['file'],
+            'line' => $error['line'],
+            'type' => $error['type']
+        ]);
+    }
+});

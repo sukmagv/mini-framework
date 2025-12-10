@@ -72,28 +72,18 @@ class Router
 
                     try {
                         foreach ($route['middleware'] as $mw) {
-                            $result = $mw();
+                            $result = $mw($response ?? null);
                             if ($result !== null) {
                                 return $result;
                             }
                         }
 
                         if (is_callable($route['callback'])) {
-
-                            $GLOBALS['logger']->app("INFO", "Route matched function callback", [
-                                'route' => $route['path']
-                            ]);
-
                             $response = call_user_func_array($route['callback'], $params);
 
                         } else {
                             list($controller, $methodName) = $route['callback'];
                             $instance = new $controller();
-
-                            $GLOBALS['logger']->app("INFO", "Route matched controller", [
-                                'controller' => $controller,
-                                'method'     => $methodName
-                            ]);
 
                             $reflection = new \ReflectionMethod($instance, $methodName);
                             $args = [];
@@ -112,12 +102,6 @@ class Router
 
                             $response = $instance->$methodName(...$args);
                         }
-
-                        $GLOBALS['logger']->app("INFO","Response returned", [
-                            'method' => $method,
-                            'url'    => $uri,
-                            'response' => $response
-                        ]);
                         
                         return $response;
 
@@ -133,9 +117,22 @@ class Router
         }
 
         if (!empty($allowedMethods)) {
-            return Response::failed('Method Not Allowed', HttpStatus::METHOD_NOT_ALLOWED) + ['allowed_methods' => $allowedMethods];
+            $response = Response::failed('Method Not Allowed', HttpStatus::METHOD_NOT_ALLOWED) + ['allowed_methods' => $allowedMethods];
+            $GLOBALS['logger']->warning("Method not allowed", [
+                'method' => $method,
+                'uri'    => $uri,
+                'allowed_methods' => $allowedMethods,
+                'response' => $response
+            ]);
+            return $response;
         }
 
-        return Response::failed('Route Not Found', HttpStatus::NOT_FOUND);
+        $response = Response::failed('Route Not Found', HttpStatus::NOT_FOUND);
+        $GLOBALS['logger']->warning("Route not matched", [
+            'method' => $method,
+            'uri'    => $uri,
+            'response' => $response
+        ]);
+        return $response;
     }
 }

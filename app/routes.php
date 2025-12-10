@@ -5,20 +5,37 @@ use Core\Response;
 use App\Controllers\ProductController;
 use Core\HttpStatus;
 
-$checkRequestFormat = function () {
+$logAndCheckMiddleware = function ($response = null) {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    $uri    = $_SERVER['REQUEST_URI'] ?? '';
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
-    if (in_array($method, ['GET', 'DELETE'])) {
-        return null;
-    }
+    $GLOBALS['logger']->info("Request received", [
+        'method' => $method,
+        'uri' => $uri,
+        'content_type' => $contentType,
+        'time' => date('Y-m-d H:i:s')
+    ]);
 
-    if (
+    if (in_array($method, ['POST','PUT','PATCH']) &&
         stripos($contentType, 'application/json') === false &&
         stripos($contentType, 'application/x-www-form-urlencoded') === false &&
         stripos($contentType, 'multipart/form-data') === false
     ) {
+        $GLOBALS['logger']->warning("Invalid Content-Type", [
+            'method' => $method,
+            'uri' => $uri,
+            'content_type' => $contentType
+        ]);
         return Response::failed("Unsupported Content-Type", HttpStatus::BAD_REQUEST);
+    }
+
+    if ($response !== null) {
+        $GLOBALS['logger']->info("Response returned", [
+            'method' => $method,
+            'uri' => $uri,
+            'response' => $response
+        ]);
     }
 
     return null;
@@ -27,7 +44,7 @@ $checkRequestFormat = function () {
 
 $router = new Router;
 
-$router->middleware($checkRequestFormat);
+$router->middleware($logAndCheckMiddleware);
 
 $router->add('GET', '/product', [ProductController::class, 'index']);
 $router->add('GET', '/product/:id', [ProductController::class, 'show']);
