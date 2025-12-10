@@ -6,12 +6,12 @@ use Core\Database;
 use Core\Request;
 use Core\Response;
 use App\Models\Product;
-use App\Controllers\Controller;
+use Core\HttpStatus;
 
-class ProductController extends Controller
+class ProductController
 {
     protected \mysqli $db;
-    protected Product $products;
+    protected Product $product;
 
     /**
      * Initialize the controller by setting up database connection
@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         $this->db = Database::getInstance()->connection();
 
-        $this->products = new Product($this->db);
+        $this->product = new Product($this->db);
     }
 
     /**
@@ -32,17 +32,9 @@ class ProductController extends Controller
      */
     public function index(): array
     {
-        $allProducts = $this->products->findAll();
+        $products = $this->product->findAll();
 
-        if (isset($allProducts['error'])) {
-            return Response::failed($allProducts['message'], 500);
-        }
-
-        if (empty($allProducts)) {
-            return Response::failed('Data not found', 404);
-        }
-
-        return Response::success('All data retrieved', $allProducts, 200);
+        return Response::success('Data retrieved', $products, HttpStatus::OK);
     }
 
     /**
@@ -50,29 +42,16 @@ class ProductController extends Controller
      *
      * @return array
      */
-    public function store(): array
+    public function store(Request $request): array
     {
-        $data = Request::all();
-
-        $result = Request::validated($data, [
+        $product = $request->validated([
             'name' => 'required',
             'category' => 'required'
         ]);
 
-        if (isset($result['errors'])) {
-            return Response::failed($result['errors'], 422);
-        }
-        
-        $response = $this->products->create([
-            "name" => $data["name"],
-            "category" => $data["category"]
-        ]);
+        $response = $this->product->create($product);
 
-        if (isset($response['error'])) {
-            return Response::failed($response['message'], 500);
-        }
-
-        return Response::success('Data created successfully', $response, 201);
+        return Response::success('Data created successfully', $response, HttpStatus::CREATED); 
     }
 
     /**
@@ -83,17 +62,9 @@ class ProductController extends Controller
      */
     public function show(int $id): array
     {
-        $oneProduct = $this->products->findOne($id);
+        $product = $this->product->findOneOrFail($id);
 
-        if (isset($oneProduct['error'])) {
-            return Response::failed($oneProduct['message'], 500);
-        }
-
-        if (empty($oneProduct)) {
-            return Response::failed('Data ID not found', 404);
-        }
-
-        return Response::success('Selected data retrieved', $oneProduct, 200);
+        return Response::success('Selected data retrieved', $product, HttpStatus::OK);
     }
 
     /**
@@ -102,42 +73,18 @@ class ProductController extends Controller
      * @param integer $id
      * @return array
      */
-    public function update(int $id): array
+    public function update(int $id, Request $request): array
     {
-        if (empty($id) || !is_numeric($id)) {
-            return Response::failed('Invalid ID', 400);
-        }
+        $product = $this->product->findOneOrFail($id);
 
-        $existing = $this->products->findOne($id);
-        
-        if (!$existing) {
-            return Response::failed('Data ID not found', 404);
-        }
-        
-        $data = Request::all();
-        
-        $result = Request::validated($data, [
+        $product = $request->validated([
             'name' => 'required',
             'category' => 'required'
         ]);
 
-        if (isset($result['errors'])) {
-            return Response::failed($result['errors'], 422);
-        }
+        $response = $this->product->update($id, $product);
 
-        $response = $this->products->update(
-            $id, 
-            [
-                "name" => $data["name"],
-                "category" => $data["category"]
-            ]
-        );
-
-        if (isset($response['error'])) {
-            return Response::failed($response['message'], 500);
-        }
-
-        return Response::success('Data updated successfully', $response, 200);
+        return Response::success('Data updated successfully', $response, HttpStatus::OK); 
     }
 
     /**
@@ -148,17 +95,11 @@ class ProductController extends Controller
      */
     public function delete(int $id): array
     {
-        $response = $this->products->delete($id);
+        $product = $this->product->findOneOrFail($id);
 
-        if (isset($response['error'])) {
-            return Response::failed($response['message'], 500);
-        }
+        $response = $this->product->delete($product['id']);
 
-        if (isset($response['not_found'])) {
-            return Response::failed('Data ID not found', 404);
-        }
-
-        return Response::success('Selected data deleted', $response, 200);
+        return Response::success('Selected data deleted', $response, HttpStatus::OK);
 
     }
 }

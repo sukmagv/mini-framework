@@ -22,59 +22,45 @@ class Model
      */
     public function findAll(): array
     {
-        try {
-            $sql = "SELECT * FROM {$this->table}";
-            $result = $this->conn->query($sql);
+        $sql = "SELECT * FROM {$this->table}";
+        $result = $this->conn->query($sql);
 
-            if ($result->num_rows > 0) {
-                $data = [];
+        if ($result->num_rows > 0) {
+            $data = [];
 
-                while ($row = $result->fetch_assoc()) {
-                    $data[] = $row;
-                }
-
-                return $data;
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
             }
 
-            return [];
-
-        } catch (\mysqli_sql_exception $e) {
-            return [
-                'error' => $e,
-                'message' => $e->getMessage()
-            ];
+            return $data;
         }
+        return [];
     }
+    
     /**
      * Retrieve a single record by its ID
      *
      * @param integer $id
      * @return array
      */
-    public function findOne(int $id): array
+    public function findOneOrFail(int $id): array
     {
-        try {
-            $sql = "SELECT * FROM {$this->table} WHERE id = ?";
-            $stmt =  $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id);
+        $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+        $stmt =  $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id);
 
-            if ($stmt->execute()) {
-                $result = $stmt->get_result();
-
-                $row = $result->fetch_assoc();
-
-                return $row ?? [];
-            }
-
-            return [];
-
-        } catch (\mysqli_sql_exception $e) {
-            return [
-                'error' => $e,
-                'message' => $e->getMessage()
-            ];
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        if (!$row) {
+            throw new \InvalidArgumentException("ID $id not found");
         }
+        
+        return $row;
     }
+
     /**
      * Insert a new record into the table
      *
@@ -83,29 +69,21 @@ class Model
      */
     public function create(array $data): array
     {
-        try {
-            $fields = implode(", ", array_keys($data));
-            $placeholders = implode(", ", array_fill(0, count($data), '?'));
+        $fields = implode(", ", array_keys($data));
+        $placeholders = implode(", ", array_fill(0, count($data), '?'));
 
-            $sql = "INSERT INTO {$this->table} ({$fields}) VALUES ($placeholders)";
-            $stmt =  $this->conn->prepare($sql);
+        $sql = "INSERT INTO {$this->table} ({$fields}) VALUES ($placeholders)";
+        $stmt =  $this->conn->prepare($sql);
 
-            $types = str_repeat("s", count($data));
-            $values = array_values($data);
-            $stmt->bind_param($types, ...$values);
+        $types = str_repeat("s", count($data));
+        $values = array_values($data);
+        $stmt->bind_param($types, ...$values);
 
-            if ($stmt->execute()) {
-                return $this->findOne($this->conn->insert_id);
-            }
-
-            return [];
-
-        } catch (\mysqli_sql_exception $e) {
-            return [
-                'error' => $e,
-                'message' => $e->getMessage()
-            ];
+        if ($stmt->execute()) {
+            return $this->findOneOrFail($this->conn->insert_id);
         }
+
+        return [];
     }
     /**
      * Update an existing record by ID
@@ -116,30 +94,22 @@ class Model
      */
     public function update(int $id, array $data): array
     {
-        try {
-            $fields = implode(" = ?, ", array_keys($data)) . " = ?";
-            $types = str_repeat('s', count($data)) . 'i';
-            
-            $sql = "UPDATE {$this->table} SET $fields WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
+        $fields = implode(" = ?, ", array_keys($data)) . " = ?";
+        $types = str_repeat('s', count($data)) . 'i';
+        
+        $sql = "UPDATE {$this->table} SET $fields WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
 
-            $values = array_values($data);
-            $values[] = $id;
+        $values = array_values($data);
+        $values[] = $id;
 
-            $stmt->bind_param($types, ...$values);
+        $stmt->bind_param($types, ...$values);
 
-            if ($stmt->execute()) {
-                return $this->findOne($id);
-            }
-
-            return [];
-            
-        } catch (\mysqli_sql_exception $e) {
-            return [
-                'error' => $e,
-                'message' => $e->getMessage()
-            ];
+        if ($stmt->execute()) {
+            return $this->findOneOrFail($id);
         }
+
+        return [];
     }
 
     /**
@@ -150,26 +120,11 @@ class Model
      */
     public function delete(int $id): array
     {
-        try {
-            $check = $this->findOne($id);
-
-            if (!$check) {
-                return ['not_found' => true];
-            }
-
-            $sql = "DELETE FROM {$this->table} WHERE id = ?";
-            $stmt =  $this->conn->prepare($sql);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-
-            return ['deleted' => $id];
-
-        } catch (\mysqli_sql_exception $e) {
-            return [
-                'error' => $e,
-                'message' => $e->getMessage()
-            ];
-        }
+        $sql = "DELETE FROM {$this->table} WHERE id = ?";
+        $stmt =  $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return ['deleted' => $id];
     }
 
 }
