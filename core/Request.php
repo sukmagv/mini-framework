@@ -8,15 +8,20 @@ namespace Core;
 
 class Request
 {
+    private array $data;
+
+    public function __construct()
+    {
+        $this->data = $this->parse();
+    }
     /**
      * Get all input from JSON request
      *
      * @return array
      */
-    public static function all(): array
+    private function parse(): array
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        
         $data = [];
 
         if ($method === 'POST') {
@@ -27,7 +32,7 @@ class Request
             $json = file_get_contents('php://input');
             if ($json) {
                 $decoded = json_decode($json, true);
-                if (json_last_error() === JSON_ERROR_NONE && !empty($decoded)) {
+                if (json_last_error() === JSON_ERROR_NONE) {
                     $data = $decoded;
                 }
             }
@@ -55,7 +60,7 @@ class Request
             }
         }
 
-        return [];
+        return $data;
     }
 
     /**
@@ -66,7 +71,7 @@ class Request
      * @param string $raw
      * @return array
      */
-    private static function parseMultipart(string $raw): array
+    private function parseMultipart(string $raw): array
     {
         $data = [];
 
@@ -94,20 +99,22 @@ class Request
      * @param array $rules
      * @return array
      */
-    public static function validated(array $data, array $rules): array
+    public function validated(array $rules): array
     {
-        $errors = [];
+        if ($rules !== null) {
+            $errors = [];
 
-        foreach ($rules as $field => $rule) {
-            if ($rule === 'required' && empty($data[$field])) {
-                $errors[] = "$field is required";
+            foreach ($rules as $field => $rule) {
+                if ($rule === 'required' && empty($this->data[$field])) {
+                    $errors[] = "$field is required";
+                }
+            }
+
+            if (!empty($errors)) {
+                throw new \InvalidArgumentException(implode(',', $errors));
             }
         }
-
-        if (!empty($errors)) {
-            return ['errors' => $errors];
-        }
-
-        return ['data' => $data];
+        
+        return $this->data;
     }
 }
