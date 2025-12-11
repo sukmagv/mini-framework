@@ -91,11 +91,3 @@ register_shutdown_function(function() {
         ]);
     }
 });
-
-spl_autoload_register(function ($class) {
-    $file = __DIR__ . '/../' . str_replace('\\', '/', $class) . '.php';
-    if (file_exists($file)) {
-        require $file;
-        $GLOBALS['logger']->info("Autoloaded file", ['file' => $file]);
-    }
-});

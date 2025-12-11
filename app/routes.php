@@ -54,14 +54,5 @@ $router->add('DELETE', '/product/:id', [ProductController::class, 'delete']);
 
 $response = $router->run();
 
-foreach (get_included_files() as $file) {
-    $normalized = str_replace('\\', '/', $file); // ganti \ jadi /
-    if (strpos($normalized, '/vendor/') === false) {
-        $GLOBALS['logger']->info("File loaded", ['file' => $file]);
-    }
-}
-
-$GLOBALS['logger']->info("Request finished", ['response' => $response]);
-
 echo json_encode($response);
 ?>
