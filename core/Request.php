@@ -102,16 +102,10 @@ class Request
     public function validated(array $rules): array
     {
         if ($rules !== null) {
-            $errors = [];
-
             foreach ($rules as $field => $rule) {
                 if ($rule === 'required' && empty($this->data[$field])) {
-                    $errors[] = "$field is required";
+                    throw new \Exception("{$field} is required");
                 }
-            }
-
-            if (!empty($errors)) {
-                throw new \InvalidArgumentException(implode(',', $errors));
             }
         }
         

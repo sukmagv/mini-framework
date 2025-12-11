@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Exception;
+
 /**
  * Base model class for database operations.
  */
@@ -55,7 +57,7 @@ class Model
         $row = $result->fetch_assoc();
         
         if (!$row) {
-            throw new \InvalidArgumentException("ID $id not found");
+            throw new \Exception("ID {$id} not found");
         }
         
         return $row;

@@ -4,9 +4,7 @@ namespace App\Controllers;
 
 use Core\Database;
 use Core\Request;
-use Core\Response;
 use App\Models\Product;
-use Core\HttpStatus;
 
 class ProductController
 {
@@ -34,7 +32,10 @@ class ProductController
     {
         $products = $this->product->findAll();
 
-        return Response::success('Data retrieved', $products, HttpStatus::OK);
+        return [
+            'message' => 'All data has been retrieved',
+            'data' => $products
+        ];
     }
 
     /**
@@ -51,7 +52,10 @@ class ProductController
 
         $response = $this->product->create($product);
 
-        return Response::success('Data created successfully', $response, HttpStatus::CREATED); 
+        return [
+            'message' => 'New data has been created',
+            'data' => $response
+        ];
     }
 
     /**
@@ -64,7 +68,10 @@ class ProductController
     {
         $product = $this->product->findOneOrFail($id);
 
-        return Response::success('Selected data retrieved', $product, HttpStatus::OK);
+        return [
+            'message' => 'Selected data has been retrieved',
+            'data' => $product
+        ];
     }
 
     /**
@@ -84,7 +91,10 @@ class ProductController
 
         $response = $this->product->update($id, $product);
 
-        return Response::success('Data updated successfully', $response, HttpStatus::OK); 
+        return [
+            'message' => 'Data has been updated',
+            'data' => $response
+        ];
     }
 
     /**
@@ -99,7 +109,9 @@ class ProductController
 
         $response = $this->product->delete($product['id']);
 
-        return Response::success('Selected data deleted', $response, HttpStatus::OK);
-
+        return [
+            'message' => 'Data has been deleted',
+            'data' => $response
+        ];
     }
 }

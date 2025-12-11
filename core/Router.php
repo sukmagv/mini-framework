@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Throwable;
+
 /**
  * Base router class for registering and executing HTTP routes
  */
@@ -101,14 +103,18 @@ class Router
                             }
 
                             $response = $instance->$methodName(...$args);
+
+                            if (str_contains($response['message'], 'created')) {
+                                return Response::success($response['message'], $response['data'], HttpStatus::CREATED);
+                            }
+
+                            return Response::success($response['message'], $response['data'], HttpStatus::OK);
                         }
                         
                         return $response;
 
-                    } catch (\InvalidArgumentException $e) {
-                        return Response::failed($e->getMessage(), HttpStatus::BAD_REQUEST);
-                    } catch (\Throwable $e) {
-                        return Response::failed($e->getMessage(), HttpStatus::INTERNAL_SERVER_ERROR);
+                    } catch (Throwable $e) {
+                        return $this->handle($e);
                     }
                 }
 
@@ -117,7 +123,8 @@ class Router
         }
 
         if (!empty($allowedMethods)) {
-            $response = Response::failed('Method Not Allowed', HttpStatus::METHOD_NOT_ALLOWED) + ['allowed_methods' => $allowedMethods];
+            $response = $this->handle(new \Exception('Method Not Allowed'));
+            $response['allowed_methods'] = $allowedMethods;
             $GLOBALS['logger']->warning("Method not allowed", [
                 'method' => $method,
                 'uri'    => $uri,
@@ -127,12 +134,43 @@ class Router
             return $response;
         }
 
-        $response = Response::failed('Route Not Found', HttpStatus::NOT_FOUND);
+        $response = $this->handle(new \Exception('Route not found'));
         $GLOBALS['logger']->warning("Route not matched", [
             'method' => $method,
             'uri'    => $uri,
             'response' => $response
         ]);
         return $response;
+    }
+
+    /**
+     * Exception handler
+     *
+     * @param Throwable $e
+     * @return array
+     */
+    public function handle(Throwable $e):  array
+    {   
+        $GLOBALS['logger']->error($e->getMessage(), [
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        $message = strtolower($e->getMessage());
+
+        if (str_contains($message, 'method not allowed')) {
+            return Response::failed($e->getMessage(), HttpStatus::METHOD_NOT_ALLOWED);
+        }
+
+        if (str_contains($message, 'not found')) {
+            return Response::failed($e->getMessage(), HttpStatus::NOT_FOUND);
+        }
+
+        if (str_contains($message, 'invalid') || str_contains($message, 'required')) {
+            return Response::failed($e->getMessage(), HttpStatus::BAD_REQUEST);
+        }
+
+        return Response::failed("Internal Server Error", HttpStatus::INTERNAL_SERVER_ERROR);
     }
 }
