@@ -1,0 +1,974 @@
+{
+  "info": {
+    "_postman_id": "58c8bfe7-ba13-4961-a1d6-633b596f6132",
+    "name": "mini-framework",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Find All",
+      "id": "d0c59552-d58b-484a-9ba1-e39a9c2fdc6c",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/product",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "product"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": null,
+              "disabled": true
+            },
+            {
+              "key": "category",
+              "value": null,
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "id": "1ad77296-72e4-4756-b68a-1c2a1c45983d",
+          "name": "success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": null,
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": null,
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:35:48 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data retrieved\",\"data\":[{\"id\":\"1\",\"name\":\"Luxury Disease\",\"category\":\"Full Album\"},{\"id\":\"2\",\"name\":\"3xxxv5\",\"category\":\"Full Album\"},{\"id\":\"3\",\"name\":\"Ambitions\",\"category\":\"Full Album\"},{\"id\":\"4\",\"name\":\"Eye of the Storm\",\"category\":\"Full Album\"},{\"id\":\"5\",\"name\":\"3xxxv5\",\"category\":\"Deluxe Edition Album\"}]}"
+        },
+        {
+          "id": "8ce0e061-f800-42d8-ad2c-263fea75faa3",
+          "name": "success - empty table",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": null,
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": null,
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:55:21 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data retrieved\",\"data\":[]}"
+        }
+      ]
+    },
+    {
+      "name": "Find One",
+      "id": "5367e55b-cc93-42df-a480-d1c8ea97276f",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/product/100",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "product",
+            "100"
+          ]
+        }
+      },
+      "response": [
+        {
+          "id": "b3ffe6f8-7315-46fb-88be-5c49cb3f3dbb",
+          "name": "success",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://localhost:8000/product/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "1"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:51:21 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Selected data retrieved\",\"data\":{\"id\":1,\"name\":\"Luxury Disease\",\"category\":\"Full Album\"}}"
+        },
+        {
+          "id": "fe65a8a0-8e0c-4e1a-a189-014570339eae",
+          "name": "failed - id not found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/product/100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "100"
+              ]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:52:04 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"Data ID not found\"}"
+        }
+      ]
+    },
+    {
+      "name": "Create",
+      "id": "d32a51a3-a4c4-47db-8602-1ba5440e1b47",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "nama",
+              "value": "Detox",
+              "type": "text"
+            },
+            {
+              "key": "category",
+              "value": "Full Album",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8000/product",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "product"
+          ]
+        }
+      },
+      "response": [
+        {
+          "id": "c6efff46-ec0e-455b-8f9b-b18502941df4",
+          "name": "success - json",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Luxury Disease\",\r\n    \"category\" : \"Full Album\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:33:11 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data created successfully\",\"data\":{\"id\":1,\"name\":\"Luxury Disease\",\"category\":\"Full Album\"}}"
+        },
+        {
+          "id": "6217bfdb-7732-4bbf-8329-b31c18eed685",
+          "name": "success - form-data",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "3xxxv5",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Full Album",
+                  "type": "text"
+                }
+              ],
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:34:03 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data created successfully\",\"data\":{\"id\":2,\"name\":\"3xxxv5\",\"category\":\"Full Album\"}}"
+        },
+        {
+          "id": "3f7e3bad-4bbf-4575-9167-1515b836ea55",
+          "name": "failed - empty field",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "3xxxv5",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "type": "text"
+                }
+              ],
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 05:34:37 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"category is required\"}"
+        },
+        {
+          "id": "3450fd87-eeaf-4dc0-9089-294c772262a1",
+          "name": "failed - 405",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Detox\",\r\n    \"category\" : \"Full Album\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product"
+              ]
+            }
+          },
+          "status": "Method Not Allowed",
+          "code": 405,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:06:12 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"Method Not Allowed\",\"allowed_methods\":[\"GET\",\"POST\"]}"
+        }
+      ]
+    },
+    {
+      "name": "Update",
+      "id": "dc32745d-3346-4e81-ba66-7334acd63e70",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Beam of Light",
+              "type": "text"
+            },
+            {
+              "key": "category",
+              "value": "",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8000/product/9",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "product",
+            "9"
+          ]
+        }
+      },
+      "response": [
+        {
+          "id": "232092da-25b4-4fe5-a20e-cf4c87cecae2",
+          "name": "success - json",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\" : \"Detox\",\r\n    \"category\" : \"Full Album\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "8"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:22:55 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data updated successfully\",\"data\":{\"id\":8,\"name\":\"Detox\",\"category\":\"Full Album\"}}"
+        },
+        {
+          "id": "24c8d502-c502-4b64-9c11-9343e1be2df0",
+          "name": "success - form-data",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Beam of Light",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Full Album",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/product/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "8"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:22:00 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Data updated successfully\",\"data\":{\"id\":8,\"name\":\"Beam of Light\",\"category\":\"Full Album\"}}"
+        },
+        {
+          "id": "7750ee46-0a35-4f12-a483-9bbfd3010e6c",
+          "name": "failed - empty field",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Beam of Light",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "type": "text"
+                }
+              ],
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/product/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "8"
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:37:29 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"category is required\"}"
+        },
+        {
+          "id": "65fd8df4-cb51-410c-a996-6c1d0536ca7c",
+          "name": "failed - 405",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Beam of Light",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "Full Album",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/product/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "8"
+              ]
+            }
+          },
+          "status": "Method Not Allowed",
+          "code": 405,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:05:15 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"Method Not Allowed\",\"allowed_methods\":[\"GET\",\"PUT\",\"DELETE\"]}"
+        }
+      ]
+    },
+    {
+      "name": "Delete",
+      "id": "3a4f4246-146e-47ff-9a72-258495896f29",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/product/13",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "product",
+            "13"
+          ]
+        }
+      },
+      "response": [
+        {
+          "id": "e90304ad-1d26-44e5-a73c-e940ec70113e",
+          "name": "success",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/product/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "8"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:39:48 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"success\",\"message\":\"Selected data deleted\",\"data\":{\"deleted\":8}}"
+        },
+        {
+          "id": "febd0a24-d546-4df6-8b17-aca2b01cdf39",
+          "name": "failed - id not found",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/product/100",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "product",
+                "100"
+              ]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": null,
+          "header": [
+            {
+              "key": "Host",
+              "value": "localhost:8000"
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 10 Dec 2025 06:52:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "close"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.2.27"
+            },
+            {
+              "key": "Content-type",
+              "value": "text/html; charset=UTF-8"
+            }
+          ],
+          "cookie": [],
+          "body": "{\"status\":\"failed\",\"message\":\"ID 100 not found\"}"
+        }
+      ]
+    }
+  ]
+}
