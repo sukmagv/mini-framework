@@ -24,7 +24,7 @@ class Migrator
 
             require_once $file;
 
-            $class = "App\\Migrations\\" . basename($file, ".php");
+            $class = "Database\\Migrations\\" . basename($file, ".php");
             $migration = new $class;
 
             $migration->up($this->conn);
@@ -47,7 +47,7 @@ class Migrator
 
             require_once $file;
 
-            $class = "App\\Migrations\\" . basename($file, ".php");
+            $class = "Database\\Migrations\\" . basename($file, ".php");
             $migration = new $class;
 
             $migration->down($this->conn);
