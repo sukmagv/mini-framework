@@ -39,26 +39,49 @@ class Logger
         file_put_contents($this->logDir . '/' . $this->file, $logEntry, FILE_APPEND);
     }
 
-    public function debug(string $message, array $context = [])
-    { 
-        $this->log('DEBUG', $message, $context); 
-    }
-
+    /**
+     * Create information log level
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */
     public function info(string $message, array $context = [])    
     { 
         $this->log('INFO', $message, $context); 
     }
 
+    /**
+     * Create warning log level
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */
     public function warning(string $message, array $context = []) 
     { 
         $this->log('WARNING', $message, $context); 
     }
     
+    /**
+     * Create error log level
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */
     public function error(string $message, array $context = [])   
     { 
         $this->log('ERROR', $message, $context); 
     }
 
+    /**
+     * Create fatal error log level
+     *
+     * @param string $message
+     * @param array $context
+     * @return void
+     */
     public function fatal(string $message, array $context = [])   
     { 
         $this->log('FATAL', $message, $context); 
@@ -67,12 +90,18 @@ class Logger
 
 $GLOBALS['logger'] = new Logger();
 
+/**
+ * Handles standard PHP errors
+ */
 set_error_handler(function($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) return;
     $GLOBALS['logger']->error($message, compact('file','line','severity'));
     return false;
 });
 
+/**
+ * Handles uncaught exceptions
+ */
 set_exception_handler(function(Throwable $exception) {
     $GLOBALS['logger']->fatal($exception->getMessage(), [
         'file' => $exception->getFile(),
@@ -81,6 +110,9 @@ set_exception_handler(function(Throwable $exception) {
     ]);
 });
 
+/**
+ * Handles fatal errors during shutdown
+ */
 register_shutdown_function(function() {
     $error = error_get_last();
     if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {

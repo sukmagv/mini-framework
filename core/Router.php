@@ -174,6 +174,11 @@ class Router
         return Response::failed("Internal Server Error", HttpStatus::INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Load logs and middleware
+     *
+     * @return self
+     */
     public function loadMiddleware(): self
     {
         $this->middleware(function ($response = null) {
