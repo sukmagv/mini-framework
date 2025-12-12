@@ -1,7 +1,6 @@
 <?php
 
 use Core\Router;
-use Core\Response;
 use App\Controllers\ProductController;
 
 $router = new Router;

@@ -34,6 +34,9 @@ class Router
 
     /**
      * Add global middleware (applied to all routes)
+     *
+     * @param callable $func
+     * @return self
      */
     public function middleware(callable $func): self
     {

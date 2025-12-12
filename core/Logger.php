@@ -8,13 +8,6 @@ class Logger
     private string $logDir;
     private string $file;
 
-    /**
-     * Constructor
-     * All log report will be saved in app.log
-     *
-     * @param string
-     * @param string
-     */
     public function __construct(string $logDir = __DIR__ . '/../logs', string $file = 'app.log')
     {
         $this->logDir = rtrim($logDir, '/');
@@ -26,9 +19,10 @@ class Logger
     /**
      * Write log report to app.log
      *
-     * @param string
-     * @param string
-     * @param array
+     * @param string $level
+     * @param string $message
+     * @param array $context
+     * @return void
      */
     public function log(string $level, string $message, array $context = []): void
     {
@@ -46,7 +40,7 @@ class Logger
      * @param array $context
      * @return void
      */
-    public function info(string $message, array $context = [])    
+    public function info(string $message, array $context = []): void
     { 
         $this->log('INFO', $message, $context); 
     }
@@ -58,7 +52,7 @@ class Logger
      * @param array $context
      * @return void
      */
-    public function warning(string $message, array $context = []) 
+    public function warning(string $message, array $context = []): void
     { 
         $this->log('WARNING', $message, $context); 
     }
@@ -70,7 +64,7 @@ class Logger
      * @param array $context
      * @return void
      */
-    public function error(string $message, array $context = [])   
+    public function error(string $message, array $context = []): void
     { 
         $this->log('ERROR', $message, $context); 
     }
@@ -82,7 +76,7 @@ class Logger
      * @param array $context
      * @return void
      */
-    public function fatal(string $message, array $context = [])   
+    public function fatal(string $message, array $context = []): void
     { 
         $this->log('FATAL', $message, $context); 
     }

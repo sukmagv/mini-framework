@@ -17,7 +17,6 @@ enum HttpStatus: int
 /**
  * Base response class for generating consistent API success and failure responses.
  */
-
 class Response
 {
     /**

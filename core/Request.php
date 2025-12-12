@@ -14,6 +14,7 @@ class Request
     {
         $this->data = $this->parse();
     }
+    
     /**
      * Get all input from JSON request
      *
