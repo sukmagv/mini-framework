@@ -43,9 +43,9 @@ class Model
      * Retrieve a single record by its ID
      *
      * @param integer $id
-     * @return array
+     * @return mixed
      */
-    public function findOneOrFail(int $id): array
+    public function findOneOrFail(int $id): mixed
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = ?";
         $stmt =  $this->conn->prepare($sql);
@@ -80,13 +80,11 @@ class Model
         $types = str_repeat("s", count($data));
         $values = array_values($data);
         $stmt->bind_param($types, ...$values);
+        $stmt->execute();
 
-        if ($stmt->execute()) {
-            return $this->findOneOrFail($this->conn->insert_id);
-        }
-
-        return [];
+        return $data;
     }
+
     /**
      * Update an existing record by ID
      *
@@ -106,12 +104,9 @@ class Model
         $values[] = $id;
 
         $stmt->bind_param($types, ...$values);
+        $stmt->execute();
 
-        if ($stmt->execute()) {
-            return $this->findOneOrFail($id);
-        }
-
-        return [];
+        return $this->findOneOrFail($id);
     }
 
     /**
