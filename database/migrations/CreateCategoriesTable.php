@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Migrations;
+namespace Database\Migrations;
 
 use mysqli;
 
