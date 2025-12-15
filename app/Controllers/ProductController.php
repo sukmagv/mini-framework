@@ -5,6 +5,8 @@ namespace App\Controllers;
 use Core\Database;
 use Core\Request;
 use App\Models\Product;
+use Core\HttpStatus;
+use Core\Response;
 
 class ProductController
 {
@@ -32,10 +34,7 @@ class ProductController
     {
         $products = $this->product->findAll();
 
-        return [
-            'message' => 'All data has been retrieved',
-            'data' => $products
-        ];
+        return Response::success('All data retrieved', $products);
     }
 
     /**
@@ -46,16 +45,13 @@ class ProductController
     public function store(Request $request): array
     {
         $product = $request->validated([
-            'name' => 'required',
-            'category' => 'required'
+            'name' => 'required|string',
+            'category' => 'required|string'
         ]);
 
         $response = $this->product->create($product);
 
-        return [
-            'message' => 'New data has been created',
-            'data' => $response
-        ];
+        return Response::success('Data created successfully', $response, HttpStatus::CREATED);
     }
 
     /**
@@ -68,10 +64,7 @@ class ProductController
     {
         $product = $this->product->findOneOrFail($id);
 
-        return [
-            'message' => 'Selected data has been retrieved',
-            'data' => $product
-        ];
+        return Response::success('Selected data retrieved', $product);
     }
 
     /**
@@ -91,10 +84,9 @@ class ProductController
 
         $response = $this->product->update($id, $product);
 
-        return [
-            'message' => 'Data has been updated',
-            'data' => array_merge(['id' => $id], $response)
-        ];
+        $result = array_merge(['id' => $id], $response);
+        
+        return Response::success('Data has been updated', $result);
     }
 
     /**
@@ -109,9 +101,6 @@ class ProductController
 
         $response = $this->product->delete($product['id']);
 
-        return [
-            'message' => 'Data has been deleted',
-            'data' => $response
-        ];
+        return Response::success('All data retrieved', $response);
     }
 }
