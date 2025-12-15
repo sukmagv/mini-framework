@@ -82,7 +82,7 @@ class ProductController
      */
     public function update(int $id, Request $request): array
     {
-        $product = $this->product->findOneOrFail($id);
+        $this->product->findOneOrFail($id);
 
         $product = $request->validated([
             'name' => 'required',
@@ -93,7 +93,7 @@ class ProductController
 
         return [
             'message' => 'Data has been updated',
-            'data' => $response
+            'data' => array_merge(['id' => $id], $response)
         ];
     }
 

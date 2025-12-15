@@ -106,7 +106,7 @@ class Model
         $stmt->bind_param($types, ...$values);
         $stmt->execute();
 
-        return $this->findOneOrFail($id);
+        return $data;
     }
 
     /**
