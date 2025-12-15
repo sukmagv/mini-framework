@@ -9,7 +9,7 @@ A simple PHP native framework focusing on core structures such as Controllers, M
 
 ### ⚙️Tech Stack
 - Language: PHP 8.2
-- Database: MySQL
+- Database: MySQL 8
 - Environtment: Localhost
 
 ### 📍Installation Guide
@@ -61,7 +61,7 @@ logs/
 postman/  
 |  
 routes/  
-|___web.php  
+|___api.php  
 |  
 .env.example  
 gitignore  
@@ -73,7 +73,7 @@ README.md
 ### 💻Basic Usage
 This section explains the basic workflow when using the mini PHP framework.
 1. Define a route  
-    All routes are registered inside routes/web.php
+    All routes are registered inside routes/api.php
     
     ```php
     $router->add('GET', '/product', [ProductController::class, 'index']);

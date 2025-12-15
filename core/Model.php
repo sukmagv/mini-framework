@@ -43,9 +43,9 @@ class Model
      * Retrieve a single record by its ID
      *
      * @param integer $id
-     * @return mixed
+     * @return array
      */
-    public function findOneOrFail(int $id): mixed
+    public function findOneOrFail(int $id): array
     {
         $sql = "SELECT * FROM {$this->table} WHERE id = ?";
         $stmt =  $this->conn->prepare($sql);
