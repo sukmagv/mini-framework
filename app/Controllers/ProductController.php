@@ -101,6 +101,6 @@ class ProductController
 
         $response = $this->product->delete($product['id']);
 
-        return Response::success('All data retrieved', $response);
+        return Response::success('Data has been deleted', $response);
     }
 }

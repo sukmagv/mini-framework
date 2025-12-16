@@ -54,7 +54,6 @@ class Router
     public function loadMiddleware(): self
     {
         $this->middleware(function ($response = null) {
-
             $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
             $uri    = $_SERVER['REQUEST_URI'] ?? '';
             $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -108,6 +107,7 @@ class Router
             $result = $mw();
             if ($result !== null) return $result;
         }
+
         return null;
     }
 
@@ -172,12 +172,12 @@ class Router
      * @param array $allowedMethods
      * @return void
      */
-    private function handleAllowedMethods(HttpMethod $method, string $uri, array $allowedMethods): void
+    private function handleAllowedMethods(HttpMethod $method, string $uri): void
     {
         $GLOBALS['logger']->warning("Method not allowed", [
             'method' => $method,
             'uri' => $uri,
-            'allowed_methods' => $allowedMethods,
+            // 'allowed_methods' => $allowedMethods,
         ]);
 
         throw new \Exception("Method Not Allowed");
