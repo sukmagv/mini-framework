@@ -7,11 +7,11 @@ $router = new Router;
 
 $router->loadMiddleware();
 
-$router->add('GET', '/product', [ProductController::class, 'index']);
-$router->add('GET', '/product/:id', [ProductController::class, 'show']);
-$router->add('POST', '/product', [ProductController::class, 'store']);
-$router->add('PUT', '/product/:id', [ProductController::class, 'update']);
-$router->add('DELETE', '/product/:id', [ProductController::class, 'delete']);
+$router->get('/product', [ProductController::class, 'index']);
+$router->get('/product/:id', [ProductController::class, 'show']);
+$router->post('/product', [ProductController::class, 'store']);
+$router->put('/product/:id', [ProductController::class, 'update']);
+$router->delete('/product/:id', [ProductController::class, 'delete']);
 
 $response = $router->run();
 

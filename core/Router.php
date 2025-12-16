@@ -3,6 +3,8 @@
 namespace Core;
 
 use Throwable;
+use Enums\HttpMethod;
+use Enums\HttpStatus;
 
 /**
  * Base router class for registering and executing HTTP routes
@@ -17,12 +19,12 @@ class Router
      * 
      * The callback is executed when the route is matched
      *
-     * @param string $method
+     * @param HttpMethod $method
      * @param string $path
      * @param callable|array $callback
      * @return void
      */
-    public function add(string $method, string $path, callable|array $callback): void
+    public function add(HttpMethod $method, string $path, callable|array $callback): void
     {
         $this->routes[] = [
             'method'   => $method,
@@ -98,15 +100,13 @@ class Router
      * Run the middleware
      *
      * @param array $middleware
-     * @return array|null
+     * @return void
      */
-    private function runMiddleware(array $middleware): ?array
+    private function runMiddleware(array $middleware): void
     {
         foreach ($middleware as $mw) {
-            $result = $mw();
-            if ($result !== null) return $result;
+            $mw();
         }
-        return null;
     }
 
     /**
@@ -114,23 +114,23 @@ class Router
      *
      * @param string $path
      * @param array $params
-     * @return array|null
+     * @return void
      */
-    private function checkParam(string $path, array $params): ?array
+    private function checkParam(string $path, array $params): void
     {
-        if (str_contains($path, ':id')) {
-            $id = $params[0] ?? null;
+        preg_match_all('/:(\w+)/', $path, $matches);
+        
+        foreach ($matches[1] as $index => $paramName) {
+            $value = $params[$index] ?? null;
 
-            if (!$id) {
-                return Response::failed("ID is required", HttpStatus::BAD_REQUEST);
+            if ($value === null) {
+                throw new \Exception("{$paramName} is required");
             }
 
-            if (!is_numeric($id)) {
-                return Response::failed("ID must be a number", HttpStatus::BAD_REQUEST);
+            if (is_numeric($value) === false) {
+                throw new \Exception("{$paramName} must be number");
             }
         }
-
-        return null;
     }
 
     /**
@@ -143,103 +143,42 @@ class Router
     private function runController(callable|array $callback, array $params): array
     {
         if (is_callable($callback)) {
-            return call_user_func_array($callback, $params);
+            return $callback(...$params);
         }
 
-        list($controller, $methodName) = $callback;
+        [$controller, $methodName] = $callback;
         $instance = new $controller();
         $reflection = new \ReflectionMethod($instance, $methodName);
         $args = [];
 
-        foreach ($reflection->getParameters() as $param) {
-            $type = $param->getType()?->getName();
-            if ($type === Request::class) {
-                $args[] = new Request();
-            } elseif (!empty($params)) {
-                $args[] = array_shift($params);
-            } else {
-                $args[] = null;
-            }
-        }
+        $args = array_map(
+            fn($p) =>
+                $p->getType()?->getName() === Request::class
+                    ? new Request()
+                    : array_shift($params),
+            $reflection->getParameters()
+        );
 
-        $response = $instance->$methodName(...$args);
-
-        if (str_contains($response['message'], 'created')) {
-            return Response::success($response['message'], $response['data'], HttpStatus::CREATED);
-        }
-
-        return Response::success($response['message'], $response['data'], HttpStatus::OK);
-    }
-
-    /**
-     * Exception handler
-     *
-     * @param Throwable $e
-     * @return array
-     */
-    public function handle(Throwable $e):  array
-    {   
-        $GLOBALS['logger']->error($e->getMessage(), [
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-
-        $message = strtolower($e->getMessage());
-
-        if (str_contains($message, 'method not allowed')) {
-            return Response::failed($e->getMessage(), HttpStatus::METHOD_NOT_ALLOWED);
-        }
-
-        if (str_contains($message, 'not found')) {
-            return Response::failed($e->getMessage(), HttpStatus::NOT_FOUND);
-        }
-
-        if (str_contains($message, 'invalid') || str_contains($message, 'required')) {
-            return Response::failed($e->getMessage(), HttpStatus::BAD_REQUEST);
-        }
-
-        return Response::failed("Internal Server Error", HttpStatus::INTERNAL_SERVER_ERROR);
+        return $reflection->invoke($instance, ...$args);
     }
 
     /**
      * To handle allowed HTTP methods
      *
-     * @param string $method
+     * @param HttpMethod $method
      * @param string $uri
      * @param array $allowedMethods
-     * @return array
+     * @return void
      */
-    private function handleAllowedMethods(string $method, string $uri, array $allowedMethods): array
+    private function handleAllowedMethods(HttpMethod $method, string $uri, array $allowedMethods): void
     {
-        $response = $this->handle(new \Exception('Method Not Allowed'));
-        $response['allowed_methods'] = $allowedMethods;
-
         $GLOBALS['logger']->warning("Method not allowed", [
             'method' => $method,
             'uri' => $uri,
             'allowed_methods' => $allowedMethods,
         ]);
 
-        return $response;
-    }
-
-    /**
-     * To handle not found route
-     *
-     * @param string $method
-     * @param string $uri
-     * @return array
-     */
-    private function handleRouteNotFound(string $method, string $uri): array
-    {
-        $response = $this->handle(new \Exception('Route not found'));
-        $GLOBALS['logger']->warning("Route not matched", [
-            'method' => $method,
-            'uri' => $uri,
-            'response' => $response
-        ]);
-        return $response;
+        throw new \Exception("Method Not Allowed");
     }
 
     /**
@@ -249,42 +188,86 @@ class Router
      */
     public function run(): mixed
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        try {
+            $method = HttpMethod::from($_SERVER['REQUEST_METHOD']);
+            $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        $allowedMethods = [];
+            $allowedMethods = [];
 
-        foreach ($this->routes as $route) {
-            $regexPattern = preg_replace_callback('/:\w+/', fn($m) => '([^/]+)', $route['path']);
+            foreach ($this->routes as $route) {
+                $regexPattern = preg_replace_callback('/:\w+/', fn($m) => '([^/]+)', $route['path']);
 
-            if (preg_match("#^{$regexPattern}$#", $uri, $params)) {
-                array_shift($params);
+                if (preg_match("#^{$regexPattern}$#", $uri, $params)) {
+                    array_shift($params);
 
-                if ($route['method'] === $method) {
-                    if ($idCheck = $this->checkParam($route['path'], $params)) {
-                        return $idCheck;
-                    }
+                    if ($route['method'] === $method) {
+                        $this->checkParam($route['path'], $params);
 
-                    try {
-                        if ($mwResponse = $this->runMiddleware($route['middleware'])) {
-                            return $mwResponse;
-                        }
+                        $this->runMiddleware($route['middleware']);
 
                         return $this->runController($route['callback'], $params);
-
-                    } catch (Throwable $e) {
-                        return $this->handle($e);
                     }
+
+                    $allowedMethods[] = $route['method'];
                 }
-
-                $allowedMethods[] = $route['method'];
             }
-        }
 
-        if (!empty($allowedMethods)) {
-            return $this->handleAllowedMethods($method, $uri, $allowedMethods);
-        }
+            if (!empty($allowedMethods)) {
+                $this->handleAllowedMethods($method, $uri, $allowedMethods);
+            }
 
-        return $this->handleRouteNotFound($method, $uri);
+            throw new \Exception("Route not found");
+
+        } catch (Throwable $e) {
+            return ErrorHandler::handle($e);
+        }
+    }
+
+    /**
+     * Register a GET route
+     *
+     * @param string $path
+     * @param callable|array $callback
+     * @return void
+     */
+    public function get(string $path, callable|array $callback): void
+    {
+        $this->add(HttpMethod::GET, $path, $callback);
+    }
+
+    /**
+     * Register a POST route
+     *
+     * @param string $path
+     * @param callable|array $callback
+     * @return void
+     */
+    public function post(string $path, callable|array $callback): void
+    {
+        $this->add(HttpMethod::POST, $path, $callback);
+    }
+
+    /**
+     * Register a PUT route
+     *
+     * @param string $path
+     * @param callable|array $callback
+     * @return void
+     */
+    public function put(string $path, callable|array $callback): void
+    {
+        $this->add(HttpMethod::PUT, $path, $callback);
+    }
+
+    /**
+     * Register a DELETE route
+     *
+     * @param string $path
+     * @param callable|array $callback
+     * @return void
+     */
+    public function delete(string $path, callable|array $callback): void
+    {
+        $this->add(HttpMethod::DELETE, $path, $callback);
     }
 }
