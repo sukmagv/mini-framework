@@ -172,12 +172,12 @@ class Router
      * @param array $allowedMethods
      * @return void
      */
-    private function handleAllowedMethods(HttpMethod $method, string $uri): void
+    private function handleAllowedMethods(HttpMethod $method, string $uri, array $allowedMethods ): void
     {
         $GLOBALS['logger']->warning("Method not allowed", [
             'method' => $method,
             'uri' => $uri,
-            // 'allowed_methods' => $allowedMethods,
+            'allowed_methods' => $allowedMethods,
         ]);
 
         throw new \Exception("Method Not Allowed");
