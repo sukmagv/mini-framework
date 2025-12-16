@@ -100,13 +100,15 @@ class Router
      * Run the middleware
      *
      * @param array $middleware
-     * @return void
+     * @return array|null
      */
-    private function runMiddleware(array $middleware): void
+    private function runMiddleware(array $middleware): ?array
     {
         foreach ($middleware as $mw) {
-            $mw();
+            $result = $mw();
+            if ($result !== null) return $result;
         }
+        return null;
     }
 
     /**
@@ -203,7 +205,9 @@ class Router
                     if ($route['method'] === $method) {
                         $this->checkParam($route['path'], $params);
 
-                        $this->runMiddleware($route['middleware']);
+                        if ($mwResponse = $this->runMiddleware($route['middleware'])) {
+                            return $mwResponse;
+                        }
 
                         return $this->runController($route['callback'], $params);
                     }
