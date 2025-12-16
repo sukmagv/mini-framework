@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use Core\Database;
 use Core\Request;
-use App\Models\Product;
-use Core\HttpStatus;
+use Core\Database;
 use Core\Response;
+use Enums\HttpStatus;
+use App\Models\Product;
 
 class ProductController
 {
@@ -78,8 +78,8 @@ class ProductController
         $this->product->findOneOrFail($id);
 
         $product = $request->validated([
-            'name' => 'required',
-            'category' => 'required'
+            'name' => 'required|string',
+            'category' => 'required|string'
         ]);
 
         $response = $this->product->update($id, $product);
