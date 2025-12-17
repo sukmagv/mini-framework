@@ -4,7 +4,8 @@
             "App\\": "app/",
             "Core\\": "core/",
             "Database\\": "database/",
-            "Routes\\": "routes/"
+            "Routes\\": "routes/",
+            "Enums\\": "enums/"
         }
     },
     "require": {

@@ -2,17 +2,7 @@
 
 namespace Core;
 
-enum HttpStatus: int
-{
-    case OK = 200;
-    case CREATED = 201;
-
-    case BAD_REQUEST = 400;
-    case NOT_FOUND = 404;
-    case METHOD_NOT_ALLOWED = 405;
-
-    case INTERNAL_SERVER_ERROR = 500;
-}
+use Enums\HttpStatus;
 
 /**
  * Base response class for generating consistent API success and failure responses.

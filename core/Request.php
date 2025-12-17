@@ -102,14 +102,44 @@ class Request
      */
     public function validated(array $rules): array
     {
-        if ($rules !== null) {
-            foreach ($rules as $field => $rule) {
-                if ($rule === 'required' && empty($this->data[$field])) {
-                    throw new \Exception("{$field} is required");
+        $errors = [];
+
+        foreach ($rules as $field => $rule) {
+            $value = $this->data[$field] ?? null;
+            $ruleset = is_array($rule) ? $rule : explode('|', $rule);
+
+            foreach ($ruleset as $r) {
+                if ($error = $this->validateRule($field, $value, $r)) {
+                    $errors[] = $error;
                 }
             }
         }
-        
+
+        if (!empty($errors)) {
+            throw new \Exception(json_encode($errors));
+        }
+
         return $this->data;
     }
+
+    /**
+     * Request validations rules
+     *
+     * @param string $field
+     * @param mixed $value
+     * @param string $rule
+     * @return string|null
+     */
+    private function validateRule(string $field, mixed $value, string $rule): ?string
+    {
+        return match ($rule) {
+            'required' => ($value === null || $value === '') ? "{$field} is required" : null,
+            'string'   => (!is_string($value) || ctype_digit((string)$value)) ? "{$field} must be non-numeric string" : null,
+            'int'      => filter_var($value, FILTER_VALIDATE_INT) === false ? "{$field} must be integer" : null,
+            'numeric'  => !is_numeric($value) ? "{$field} must be numeric" : null,
+            'bool'     => !is_bool($value) ? "{$field} must be boolean" : null,
+            default    => null,
+        };
+    }
+
 }
